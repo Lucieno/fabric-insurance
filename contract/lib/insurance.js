@@ -40,9 +40,6 @@ class Insurance extends State {
     getInsuranceNo() { return this.getInsuranceNo; }
     setInsuranceNo(x) { return this.getInsuranceNo = x; }
 
-    getInsuranceNo() { return this.getInsuranceNo; }
-    setInsuranceNo(x) { return this.getInsuranceNo = x; }
-
     /**
      * Useful methods to encapsulate insurance states */ 
     setIssued() { this.currentState = insuranceState.ISSUED; }
@@ -58,7 +55,7 @@ class Insurance extends State {
     isRefunded() { return this.currentState === insuranceState.REFUNDED; }
 
     static fromBuffer(buffer) {
-        return this.deserialize(Buffer.from(JSON.parse(buffer)));
+        return Insurance.deserialize(Buffer.from(JSON.parse(buffer)));
     }
 
     toBuffer() {
@@ -70,14 +67,7 @@ class Insurance extends State {
      * @param {Buffer} data to form back into the object
      */
     static deserialize(data) {
-        let json = JSON.parse(data.toString());
-        let objClass = Insurance[json.class];
-        if (!objClass) {
-            throw new Error(`Unknown class of ${json.class}`);
-        }
-        let object = new (objClass)(json);
-
-        return object;
+        return State.deserializeClass(data, Insurance);
     }
 
     /**
