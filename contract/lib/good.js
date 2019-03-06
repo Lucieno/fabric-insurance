@@ -20,7 +20,7 @@ const goodState = {
 class Good extends State {
 
     constructor(owner, goodSerialNo) {
-        super(Good.getClass(), [owner, goodSerialNo]);
+        super(Good.getClass(), [goodSerialNo]);
         Object.assign(this, obj);
     }
 

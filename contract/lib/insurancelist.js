@@ -7,7 +7,7 @@ SPDX-License-Identifier: Apache-2.0
 // Utility class for collections of ledger states --  a state list
 const StateList = require('./../ledger-api/statelist.js');
 
-const Insurance = require('./paper.js');
+const Insurance = require('./insurance.js');
 
 class InsuranceList extends StateList {
 
@@ -16,11 +16,11 @@ class InsuranceList extends StateList {
         this.use(Insurance);
     }
 
-    async addInsurrance(insurance) {
+    async addInsurance(insurance) {
         return this.addState(insurance);
     }
 
-    async getInsurrance(insuranceKey) {
+    async getInsurance(insuranceKey) {
         return this.getState(insuranceKey);
     }
 

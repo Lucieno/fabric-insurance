@@ -10,6 +10,8 @@ const { Contract, Context } = require('fabric-contract-api');
 // InsuranceNet specifc classes
 const Insurance = require('./insurance.js');
 const InsuranceList = require('./insurancelist.js');
+const Good = require('./good.js');
+const GoodList = require('./goodlist.js');
 
 /**
  * A custom context provides easy access to list of all insurance
@@ -20,6 +22,7 @@ class InsuranceContext extends Context {
         super();
         // All insurance are held in a list of insurances
         this.insuranceList = new InsuranceList(this);
+        this.goodList = new GoodList(this);
     }
 
 }
@@ -66,6 +69,7 @@ class InsuranceContract extends Contract {
         // create an instance of the insurance
         let insurance = Insurance.createInstance(owner, issuer, goodSerialNo, insuranceNo);
 
+        // Set the member of the insurance
         insurance.setOwner(owner);
         insurance.setIssuer(issuer);
         insurance.setGoodSerialNo(goodSerialNo);
@@ -74,8 +78,30 @@ class InsuranceContract extends Contract {
         // Smart contract, rather than insurance, moves insurance into ISSUED state
         insurance.setIssued();
 
+        // Ensure the good is not refund and the contract will not reset the state
+        let goodKey = Good.makeKey([goodSerialNo]);
+        let retrievedGood = await ctx.goodList.getGood(goodKey);
+
+        if (retrievedGood != null) {
+            if (retrievedGood.getOwner() !== owner) {
+                throw new Error('Good ' + goodSerialNo + ' does not belong to ' + owner);
+            }
+            if (retrievedGood.isRefunded()) {
+                throw new Error('Good ' + goodSerialNo + ' has already been refunded');
+            }
+        }
+
+        // Create the good
+        let good = Good.createInstance(owner, goodSerialNo);
+
+        good.setOwner(owner);
+        good.setGoodSerialNo(goodSerialNo); 
+        good.setInsured();
+
         // Add the insurance to the list of all similar insurance the ledger world state
+        // and do the same to the good
         await ctx.insurceList.addInsurance(insurance);
+        await ctx.goodList.addGood(good);
 
         // Must return a serialized insurance to caller of smart contract
         return insurance.toBuffer();
@@ -134,18 +160,22 @@ class InsuranceContract extends Contract {
 
         // Check insurance is not REFUNDED
         if (insurance.isRefunded()) {
-            throw new Error('Insurance ' + issuer + insuranceNo + ' is already refunded');
+            throw new Error('Insurance ' + issuer + insuranceNo + ' has already been refunded');
         }
 
-        // Verify that the redeemer owns the commercial paper before redeeming it
-        if (paper.getOwner() === redeemingOwner) {
-            paper.setOwner(paper.getIssuer());
-            paper.setRedeemed();
-        } else {
-            throw new Error('Redeeming owner does not own paper' + issuer + paperNumber);
+        // Verify that the the good is not refunded
+        let goodKey = Good.makeKey([goodSerialNo]);
+        let good = await ctx.goodList.getGood(goodKey);
+
+        if (good.isRefunded()) {
+            throw new Error('Good ' + goodSerialNo + ' has already been refunded');
         }
+
+        insurance.setRefunded();
+        good.setRefunded();
 
         await ctx.insuranceList.updateInsurance(insurance);
+        await ctx.goodList.goodInsurance(good);
         return insurance.toBuffer();
     }
 
