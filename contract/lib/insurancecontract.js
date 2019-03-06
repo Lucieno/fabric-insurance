@@ -111,12 +111,6 @@ class InsuranceContract extends Contract {
      * Report to an insurance that the insured good is lost/damaged
      *
      * @param {Context} ctx the transaction context
-     * @param {String} issuer commercial paper issuer
-     * @param {Integer} paperNumber paper number for this issuer
-     * @param {String} currentOwner current owner of paper
-     * @param {String} newOwner new owner of paper
-     * @param {Integer} price price paid for this paper
-     * @param {String} purchaseDateTime time paper was purchased (i.e. traded)
     */
     async report(ctx, owner, issuer, goodSerialNo, insuranceNo) {
 
@@ -147,10 +141,6 @@ class InsuranceContract extends Contract {
      * Refund an insurance
      *
      * @param {Context} ctx the transaction context
-     * @param {String} issuer insurance issuer
-     * @param {Integer} paperNumber paper number for this issuer
-     * @param {String} redeemingOwner redeeming owner of paper
-     * @param {String} redeemDateTime time paper was redeemed
     */
     async redeem(ctx, issuer, insuranceNo) {
 
