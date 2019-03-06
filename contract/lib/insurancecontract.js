@@ -7,39 +7,39 @@ SPDX-License-Identifier: Apache-2.0
 // Fabric smart contract classes
 const { Contract, Context } = require('fabric-contract-api');
 
-// PaperNet specifc classes
-const CommercialPaper = require('./paper.js');
-const PaperList = require('./paperlist.js');
+// InsuranceNet specifc classes
+const Insurance = require('./insurance.js');
+const InsuranceList = require('./insurancelist.js');
 
 /**
- * A custom context provides easy access to list of all commercial papers
+ * A custom context provides easy access to list of all insurance
  */
-class CommercialPaperContext extends Context {
+class InsuranceContext extends Context {
 
     constructor() {
         super();
-        // All papers are held in a list of papers
-        this.paperList = new PaperList(this);
+        // All insurance are held in a list of insurances
+        this.insuranceList = new InsuranceList(this);
     }
 
 }
 
 /**
- * Define commercial paper smart contract by extending Fabric Contract class
+ * Define insurance smart contract by extending Fabric Contract class
  *
  */
-class CommercialPaperContract extends Contract {
+class InsuranceContract extends Contract {
 
     constructor() {
         // Unique namespace when multiple contracts per chaincode file
-        super('org.papernet.commercialpaper');
+        super('org.insurancenet.insurance');
     }
 
     /**
-     * Define a custom context for commercial paper
+     * Define a custom context for insurance 
     */
     createContext() {
-        return new CommercialPaperContext();
+        return new InsuranceContext();
     }
 
     /**
@@ -53,35 +53,36 @@ class CommercialPaperContract extends Contract {
     }
 
     /**
-     * Issue commercial paper
+     * Issue Insurance
      *
      * @param {Context} ctx the transaction context
-     * @param {String} issuer commercial paper issuer
-     * @param {Integer} paperNumber paper number for this issuer
-     * @param {String} issueDateTime paper issue date
-     * @param {String} maturityDateTime paper maturity date
-     * @param {Integer} faceValue face value of paper
+     * @param {String} owner insurce owner
+     * @param {String} issuer insurce issuer
+     * @param {Integer} goodSerialNo serial number of the product insured
+     * @param {Integer} insuranceNo insurnce number for this insurance
     */
-    async issue(ctx, issuer, paperNumber, issueDateTime, maturityDateTime, faceValue) {
+    async issue(ctx, owner, issuer, goodSerialNo, insuranceNo) {
 
-        // create an instance of the paper
-        let paper = CommercialPaper.createInstance(issuer, paperNumber, issueDateTime, maturityDateTime, faceValue);
+        // create an instance of the insurance
+        let insurance = Insurance.createInstance(owner, issuer, goodSerialNo, insuranceNo);
 
-        // Smart contract, rather than paper, moves paper into ISSUED state
-        paper.setIssued();
+        insurance.setOwner(owner);
+        insurance.setIssuer(issuer);
+        insurance.setGoodSerialNo(goodSerialNo);
+        insurance.setInsuranceNo(insuranceNo);
 
-        // Newly issued paper is owned by the issuer
-        paper.setOwner(issuer);
+        // Smart contract, rather than insurance, moves insurance into ISSUED state
+        insurance.setIssued();
 
-        // Add the paper to the list of all similar commercial papers in the ledger world state
-        await ctx.paperList.addPaper(paper);
+        // Add the insurance to the list of all similar insurance the ledger world state
+        await ctx.insurceList.addInsurance(insurance);
 
-        // Must return a serialized paper to caller of smart contract
-        return paper.toBuffer();
+        // Must return a serialized insurance to caller of smart contract
+        return insurance.toBuffer();
     }
 
     /**
-     * Buy commercial paper
+     * Report to an insurance that the insured good is lost/damaged
      *
      * @param {Context} ctx the transaction context
      * @param {String} issuer commercial paper issuer
@@ -91,52 +92,49 @@ class CommercialPaperContract extends Contract {
      * @param {Integer} price price paid for this paper
      * @param {String} purchaseDateTime time paper was purchased (i.e. traded)
     */
-    async buy(ctx, issuer, paperNumber, currentOwner, newOwner, price, purchaseDateTime) {
+    async report(ctx, owner, issuer, goodSerialNo, insuranceNo) {
 
-        // Retrieve the current paper using key fields provided
-        let paperKey = CommercialPaper.makeKey([issuer, paperNumber]);
-        let paper = await ctx.paperList.getPaper(paperKey);
+        // Retrieve the insurance using key fields provided
+        let insuranceKey = Insurance.makeKey([issuer, insuranceNo]);
+        let insurance = await ctx.insuranceList.getInsurance(insuranceKey);
 
         // Validate current owner
-        if (paper.getOwner() !== currentOwner) {
-            throw new Error('Paper ' + issuer + paperNumber + ' is not owned by ' + currentOwner);
+        if (insurance.getOwner() !== owner) {
+            throw new Error('Insurace ' + issuer + insuranceNo + ' is not owned by ' + owner);
+        }
+
+        if (insurance.getGoodSerialNo() !== goodSerialNo) {
+            throw new Error('Insurace ' + issuer + insuranceNo + ' does not insure ' + goodSerialNo);
         }
 
         // First buy moves state from ISSUED to TRADING
-        if (paper.isIssued()) {
-            paper.setTrading();
+        if (insurance.isIssued()) {
+            insurance.setReported();
         }
 
-        // Check paper is not already REDEEMED
-        if (paper.isTrading()) {
-            paper.setOwner(newOwner);
-        } else {
-            throw new Error('Paper ' + issuer + paperNumber + ' is not trading. Current state = ' +paper.getCurrentState());
-        }
-
-        // Update the paper
-        await ctx.paperList.updatePaper(paper);
-        return paper.toBuffer();
+        // Update the insurance
+        await ctx.insuranceList.updateInsurance(insurance);
+        return insurance.toBuffer();
     }
 
     /**
-     * Redeem commercial paper
+     * Refund an insurance
      *
      * @param {Context} ctx the transaction context
-     * @param {String} issuer commercial paper issuer
+     * @param {String} issuer insurance issuer
      * @param {Integer} paperNumber paper number for this issuer
      * @param {String} redeemingOwner redeeming owner of paper
      * @param {String} redeemDateTime time paper was redeemed
     */
-    async redeem(ctx, issuer, paperNumber, redeemingOwner, redeemDateTime) {
+    async redeem(ctx, issuer, insuranceNo) {
 
-        let paperKey = CommercialPaper.makeKey([issuer, paperNumber]);
+        // Retrieve the insurance using key fields provided
+        let insuranceKey = Insurance.makeKey([issuer, insuranceNo]);
+        let insurance = await ctx.insuranceList.getInsurance(insuranceKey);
 
-        let paper = await ctx.paperList.getPaper(paperKey);
-
-        // Check paper is not REDEEMED
-        if (paper.isRedeemed()) {
-            throw new Error('Paper ' + issuer + paperNumber + ' already redeemed');
+        // Check insurance is not REFUNDED
+        if (insurance.isRefunded()) {
+            throw new Error('Insurance ' + issuer + insuranceNo + ' is already refunded');
         }
 
         // Verify that the redeemer owns the commercial paper before redeeming it
@@ -147,10 +145,10 @@ class CommercialPaperContract extends Contract {
             throw new Error('Redeeming owner does not own paper' + issuer + paperNumber);
         }
 
-        await ctx.paperList.updatePaper(paper);
-        return paper.toBuffer();
+        await ctx.insuranceList.updateInsurance(insurance);
+        return insurance.toBuffer();
     }
 
 }
 
-module.exports = CommercialPaperContract;
+module.exports = InsuranceContract;

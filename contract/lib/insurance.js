@@ -7,7 +7,7 @@ SPDX-License-Identifier: Apache-2.0
 // Utility class for ledger state
 const State = require('./../ledger-api/state.js');
 
-// Enumerate commercial insurance state values
+// Enumerate insurance state values
 const insuranceState = {
     ISSUED: 1,
     REPORTED: 2,
@@ -21,13 +21,8 @@ const insuranceState = {
 class Insurance extends State {
 
     constructor(owner, issuer, goodSerialNo, insuranceNo) {
-        super(Insurance.getClass(), [owner, issuer, goodSerialNo, insuranceNo]);
+        super(Insurance.getClass(), [issuer, insuranceNo]);
         Object.assign(this, obj);
-        setOwner(owner);
-        setIssuer(issuer);
-        setGoodSerialNo(goodSerialNo);
-        setInsuranceNo(insuranceNo);
-        setIssued();
     }
 
     /**
@@ -49,7 +44,7 @@ class Insurance extends State {
     setInsuranceNo(x) { return this.getInsuranceNo = x; }
 
     /**
-     * Useful methods to encapsulate commercial insurance states */ 
+     * Useful methods to encapsulate insurance states */ 
     setIssued() { this.currentState = insuranceState.ISSUED; }
 
     setReported() { this.currentState = insuranceState.REPORTED; }
@@ -71,7 +66,7 @@ class Insurance extends State {
     }
 
     /**
-     * Deserialize a state data to commercial insurance
+     * Deserialize a state data to insurance
      * @param {Buffer} data to form back into the object
      */
     static deserialize(data) {
@@ -86,7 +81,7 @@ class Insurance extends State {
     }
 
     /**
-     * Factory method to create a commercial insurance object
+     * Factory method to create a insurance object
      */
     static createInstance(owner, issuer, goodSerialNo, insuranceNo) {
         return new Insurance({ owner, issuer, goodSerialNo, insuranceNo });
