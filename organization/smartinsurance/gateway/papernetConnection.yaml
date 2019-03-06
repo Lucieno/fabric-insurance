@@ -19,7 +19,7 @@ x-type: "hlfv1"
 #
 # Describe what the target network is/does.
 #
-description: "A gateway connection file for the PaperNet networks"
+description: "A gateway connection file for the InsuranceNet networks"
 
 #
 # Schema version of the content. Used by the SDK to apply the corresponding parsing rules.
@@ -59,17 +59,17 @@ version: "1.0"
 #
 channels:
   # name of the channel
-  papernet:
+  insurancenet:
     # Required. list of orderers designated by the application to use for transactions on this
     # channel. This list can be a result of access control ("org1" can only access "ordererA"), or
     # operational decisions to share loads from applications among the orderers.  The values must
     # be "names" of orgs defined under "organizations/peers"
     orderers:
-      - orderer.magnetocorp.com
+      - orderer.smartinsurance.com
 
     # Required. list of peers from participating orgs
     peers:
-      peer1.magnetocorp.com:
+      peer1.smartinsurance.com:
         # [Optional]. will this peer be sent transaction proposals for endorsement? The peer must
         # have the chaincode installed. The app can also use this property to decide which peers
         # to send the chaincode install request. Default: true
@@ -89,7 +89,13 @@ channels:
         # Default: true
         eventSource: true
 
-      peer2.digibank.com:
+      peer2.greatinsurance.com:
+        endorsingPeer: true
+        chaincodeQuery: false
+        ledgerQuery: true
+        eventSource: true
+
+      peer3.police.com:
         endorsingPeer: true
         chaincodeQuery: false
         ledgerQuery: true
@@ -108,10 +114,10 @@ channels:
 #
 organizations:
   Org1:
-    mspid: magnetocorpMSP
+    mspid: smartinsuranceMSP
 
     peers:
-      - peer1.magnetocorp.com
+      - peer1.smartinsurance.com
 
     # [Optional]. Certificate Authorities issue certificates for identification purposes in a Fabric based
     # network. Typically certificates provisioning is done in a separate process outside of the
@@ -119,7 +125,7 @@ organizations:
     # dynamic certificate management (enroll, revoke, re-enroll). The following section is only for
     # Fabric-CA servers.
     certificateAuthorities:
-      - ca-magnetocorp
+      - ca-smartinsurance
 
     # [Optional]. If the application is going to make requests that are reserved to organization
     # administrators, including creating/updating channels, installing/instantiating chaincodes, it
@@ -129,9 +135,9 @@ organizations:
     # this way. The SDK should allow applications to set the org admin identity via APIs, and only use
     # this route as an alternative when it exists.
     adminPrivateKey:
-      path: commercial-paper/organization/magnetocorp/users/Admin@magnetocorp/keystore/9022d671ceedbb24af3ea69b5a8136cc64203df6b9920e26f48123fcfcb1d2e9_sk
+      path: organization/smartinsurance/users/Admin@smartinsurance/keystore/9022d671ceedbb24af3ea69b5a8136cc64203df6b9920e26f48123fcfcb1d2e9_sk
     signedCert:
-      path: comercial-paper/organization/magnetocorp/users/Admin@magnetocorp.com/signcerts/Admin@magnetocorp.com-cert.pem
+      path: organization/smartinsurance/users/Admin@smartinsurance.com/signcerts/Admin@smartinsurance.com-cert.pem
 
   # the profile will contain public information about organizations other than the one it belongs to.
   # These are necessary information to make transaction lifecycles work, including MSP IDs and
@@ -139,15 +145,15 @@ organizations:
   # information reserved for members of the organization, such as admin key and certificate,
   # fabric-ca registrar enroll ID and secret, etc.
   Org2:
-    mspid: digibankMSP
+    mspid: greatinsuranceMSP
     peers:
-      - peer1.digibank.com
+      - peer2.greatinsurance.com
     certificateAuthorities:
-      - ca-digibank
+      - ca-greatinsurance
     adminPrivateKey:
-      path: commercial-paper/organization/digibank/users/Admin@digibank.com/keystore/5a983ddcbefe52a7f9b8ee5b85a590c3e3a43c4ccd70c7795bec504e7f74848d_sk
+      path: organization/greatinsurance/users/Admin@greatinsurance.com/keystore/5a983ddcbefe52a7f9b8ee5b85a590c3e3a43c4ccd70c7795bec504e7f74848d_sk
     signedCert:
-      path: commercial-paper/organization/digibank/users/Admin@digibank.com/signcerts/Admin@digibank.com-cert.pem
+      path: organization/greatinsurance/users/Admin@greatinsurance.com/signcerts/Admin@greatinsurance.com-cert.pem
 
 #
 # List of orderers to send transaction and channel create/update requests to. For the time
