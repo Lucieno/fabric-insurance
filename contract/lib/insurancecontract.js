@@ -149,6 +149,11 @@ class InsuranceContract extends Contract {
         let insurance = await ctx.insuranceList.getInsurance(insuranceKey);
 
         // Check insurance is not REFUNDED
+        if (!insurance.isReported()) {
+            throw new Error('Insurance ' + issuer + insuranceNo + ' is not reported');
+        }
+
+        // Check insurance is not REFUNDED
         if (insurance.isRefunded()) {
             throw new Error('Insurance ' + issuer + insuranceNo + ' has already been refunded');
         }
