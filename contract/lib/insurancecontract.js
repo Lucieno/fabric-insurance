@@ -142,7 +142,7 @@ class InsuranceContract extends Contract {
      *
      * @param {Context} ctx the transaction context
     */
-    async redeem(ctx, issuer, insuranceNo) {
+    async refund(ctx, issuer, insuranceNo) {
 
         // Retrieve the insurance using key fields provided
         let insuranceKey = Insurance.makeKey([issuer, insuranceNo]);
