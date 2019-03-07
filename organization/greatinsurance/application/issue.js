@@ -22,7 +22,7 @@ const Insurance = require('../../../contract/lib/insurance.js');
 
 // A wallet stores a collection of identities for use
 //const wallet = new FileSystemWallet('../user/isabella/wallet');
-const wallet = new FileSystemWallet('../identity/user/tom/wallet');
+const wallet = new FileSystemWallet('../identity/user/ava/wallet');
 
 // Main program function
 async function main() {
@@ -35,7 +35,7 @@ async function main() {
 
     // Specify userName for network access
     // const userName = 'isabella.issuer@magnetocorp.com';
-    const userName = 'User1@org1.example.com';
+    const userName = 'User3@org1.example.com';
 
     // Load connection profile; will be used to locate a gateway
     let connectionProfile = yaml.safeLoad(fs.readFileSync('../gateway/networkConnection.yaml', 'utf8'));
@@ -65,7 +65,7 @@ async function main() {
     // issue insurance
     console.log('Submit insurance issue transaction.');
 
-    const issueResponse = await contract.submitTransaction('issue', 'Oscar', 'SmartInsurace', '121214', '000001');
+    const issueResponse = await contract.submitTransaction('issue', 'Oscar', 'GreatInsurace', '121214', '000002');
 
     // process response
     console.log('Process issue transaction response.');

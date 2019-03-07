@@ -12,7 +12,7 @@ const path = require('path');
 const fixtures = path.resolve(__dirname, '../../../basic-network');
 
 // A wallet stores a collection of identities
-const wallet = new FileSystemWallet('../identity/user/tom/wallet');
+const wallet = new FileSystemWallet('../identity/user/ava/wallet');
 
 async function main() {
 
@@ -20,12 +20,12 @@ async function main() {
     try {
 
         // Identity to credentials to be stored in the wallet
-        const credPath = path.join(fixtures, '/crypto-config/peerOrganizations/org1.example.com/users/User1@org1.example.com');
-        const cert = fs.readFileSync(path.join(credPath, '/msp/signcerts/User1@org1.example.com-cert.pem')).toString();
-        const key = fs.readFileSync(path.join(credPath, '/msp/keystore/cce404280f53be01aff1c12abb8d255c3acdbae690530de3ca2d8b0bd24361b4_sk')).toString();
+        const credPath = path.join(fixtures, '/crypto-config/peerOrganizations/org1.example.com/users/User3@org1.example.com');
+        const cert = fs.readFileSync(path.join(credPath, '/msp/signcerts/User3@org1.example.com-cert.pem')).toString();
+        const key = fs.readFileSync(path.join(credPath, '/msp/keystore/d531e49e7c01b52e8686a15aaf25c9c2c350ca7a7ac2de22e931317ba5c280f2_sk')).toString();
 
         // Load credentials into wallet
-        const identityLabel = 'User1@org1.example.com';
+        const identityLabel = 'User3@org1.example.com';
         const identity = X509WalletMixin.createIdentity('Org1MSP', cert, key);
         await wallet.import(identityLabel, identity);
 
