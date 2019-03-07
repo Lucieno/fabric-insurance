@@ -27,7 +27,7 @@ async function main() {
         // Load credentials into wallet
         const identityLabel = 'User1@org1.example.com';
         const identity = X509WalletMixin.createIdentity('Org1MSP', cert, key);
-await wallet.import(identityLabel, identity);
+        await wallet.import(identityLabel, identity);
 
     } catch (error) {
         console.log(`Error adding to wallet. ${error}`);
