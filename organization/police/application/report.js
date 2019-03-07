@@ -22,7 +22,7 @@ const Insurance = require('../../../contract/lib/insurance.js');
 
 // A wallet stores a collection of identities for use
 //const wallet = new FileSystemWallet('../user/isabella/wallet');
-const wallet = new FileSystemWallet('../identity/user/tom/wallet');
+const wallet = new FileSystemWallet('../identity/user/jack/wallet');
 
 // Main program function
 async function main() {
