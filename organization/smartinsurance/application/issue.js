@@ -6,8 +6,8 @@ SPDX-License-Identifier: Apache-2.0
  * This application has 6 basic steps:
  * 1. Select an identity from a wallet
  * 2. Connect to network gateway
- * 3. Access PaperNet network
- * 4. Construct request to issue commercial paper
+ * 3. Access InsuranceNet network
+ * 4. Construct request to issue insurance
  * 5. Submit transaction
  * 6. Process response
  */
@@ -18,11 +18,11 @@ SPDX-License-Identifier: Apache-2.0
 const fs = require('fs');
 const yaml = require('js-yaml');
 const { FileSystemWallet, Gateway } = require('fabric-network');
-const CommercialPaper = require('../contract/lib/paper.js');
+const Insurance = require('../../../contract/lib/insurance.js');
 
 // A wallet stores a collection of identities for use
 //const wallet = new FileSystemWallet('../user/isabella/wallet');
-const wallet = new FileSystemWallet('../identity/user/isabella/wallet');
+const wallet = new FileSystemWallet('../identity/user/tom/wallet');
 
 // Main program function
 async function main() {
@@ -52,27 +52,27 @@ async function main() {
 
     await gateway.connect(connectionProfile, connectionOptions);
 
-    // Access PaperNet network
+    // Access InsuranceNet network
     console.log('Use network channel: mychannel.');
 
     const network = await gateway.getNetwork('mychannel');
 
-    // Get addressability to commercial paper contract
-    console.log('Use org.papernet.commercialpaper smart contract.');
+    // Get addressability to insurance contract
+    console.log('Use org.insurancenet.insurance smart contract.');
 
-    const contract = await network.getContract('papercontract', 'org.papernet.commercialpaper');
+    const contract = await network.getContract('insurancecontract', 'org.insurancenet.insurance');
 
-    // issue commercial paper
-    console.log('Submit commercial paper issue transaction.');
+    // issue insurance
+    console.log('Submit insurance issue transaction.');
 
-    const issueResponse = await contract.submitTransaction('issue', 'MagnetoCorp', '00001', '2020-05-31', '2020-11-30', '5000000');
+    const issueResponse = await contract.submitTransaction('issue', 'Oscar', 'SmartInsurace', '121214', '000001');
 
     // process response
     console.log('Process issue transaction response.');
 
-    let paper = CommercialPaper.fromBuffer(issueResponse);
+    let insurance = Insurance.fromBuffer(issueResponse);
 
-    console.log(`${paper.issuer} commercial paper : ${paper.paperNumber} successfully issued for value ${paper.faceValue}`);
+    console.log(`${insurance.issuer} insurance : ${insurance.insuranceNo} successfully issued for ${insurance.owner} and his ${insurance.goodSerialNo}$`);
     console.log('Transaction complete.');
 
   } catch (error) {
