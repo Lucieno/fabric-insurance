@@ -100,7 +100,7 @@ class InsuranceContract extends Contract {
 
         // Add the insurance to the list of all similar insurance the ledger world state
         // and do the same to the good
-        await ctx.insurceList.addInsurance(insurance);
+        await ctx.insuranceList.addInsurance(insurance);
         await ctx.goodList.addGood(good);
 
         // Must return a serialized insurance to caller of smart contract
@@ -130,6 +130,8 @@ class InsuranceContract extends Contract {
         // First buy moves state from ISSUED to TRADING
         if (insurance.isIssued()) {
             insurance.setReported();
+        } else {
+            throw new Error('Insurace ' + issuer + insuranceNo + ' is not at the right state');
         }
 
         // Update the insurance
@@ -142,16 +144,23 @@ class InsuranceContract extends Contract {
      *
      * @param {Context} ctx the transaction context
     */
-    async redeem(ctx, issuer, insuranceNo) {
+    async refund(ctx, issuer, insuranceNo) {
 
         // Retrieve the insurance using key fields provided
         let insuranceKey = Insurance.makeKey([issuer, insuranceNo]);
         let insurance = await ctx.insuranceList.getInsurance(insuranceKey);
 
         // Check insurance is not REFUNDED
+        if (!insurance.isReported()) {
+            throw new Error('Insurance ' + issuer + insuranceNo + ' is not reported');
+        }
+
+        // Check insurance is not REFUNDED
         if (insurance.isRefunded()) {
             throw new Error('Insurance ' + issuer + insuranceNo + ' has already been refunded');
         }
+
+        let goodSerialNo = insurance.goodSerialNo;
 
         // Verify that the the good is not refunded
         let goodKey = Good.makeKey([goodSerialNo]);
@@ -165,7 +174,7 @@ class InsuranceContract extends Contract {
         good.setRefunded();
 
         await ctx.insuranceList.updateInsurance(insurance);
-        await ctx.goodList.goodInsurance(good);
+        await ctx.goodList.updateGood(good);
         return insurance.toBuffer();
     }
 
