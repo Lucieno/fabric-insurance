@@ -20,17 +20,9 @@ const insuranceState = {
  */
 class Insurance extends State {
 
-
-
-
-
-
-
-
-
     constructor(obj_) {
-        // super(Insurance.getClass(), [obj_.issuer, obj_.insuranceNo]);
-        // Object.assign(this, obj_);
+        super(Insurance.getClass(), [obj_.issuer, obj_.insuranceNo]);
+        Object.assign(this, obj_);
     }
 
     /**

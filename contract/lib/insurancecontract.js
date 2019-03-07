@@ -100,7 +100,7 @@ class InsuranceContract extends Contract {
 
         // Add the insurance to the list of all similar insurance the ledger world state
         // and do the same to the good
-        await ctx.insurceList.addInsurance(insurance);
+        await ctx.insuranceList.addInsurance(insurance);
         await ctx.goodList.addGood(good);
 
         // Must return a serialized insurance to caller of smart contract

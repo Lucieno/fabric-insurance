@@ -72,7 +72,7 @@ async function main() {
 
     let insurance = Insurance.fromBuffer(issueResponse);
 
-    console.log(`${insurance.issuer} insurance : ${insurance.insuranceNo} successfully issued for ${insurance.owner} and his ${insurance.goodSerialNo}$`);
+    console.log(`${insurance.issuer} insurance : ${insurance.insuranceNo} successfully issued for ${insurance.owner} and his ${insurance.goodSerialNo}`);
     console.log('Transaction complete.');
 
   } catch (error) {
