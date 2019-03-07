@@ -1,5 +1,8 @@
+# crypto-config/
+
 organization/smartinsurance/application/node_modules/
 organization/smartinsurance/identity/
 organization/police/application/node_modules/
 organization/police/identity/
-# crypto-config/
+organization/greatinsurance/application/node_modules/
+organization/greatinsurance/identity/
