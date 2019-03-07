@@ -7,7 +7,7 @@ SPDX-License-Identifier: Apache-2.0
  * 1. Select an identity from a wallet
  * 2. Connect to network gateway
  * 3. Access InsuranceNet network
- * 4. Construct request to issue insurance
+ * 4. Construct request to report
  * 5. Submit transaction
  * 6. Process response
  */
@@ -35,7 +35,7 @@ async function main() {
 
     // Specify userName for network access
     // const userName = 'isabella.issuer@magnetocorp.com';
-    const userName = 'User1@org1.example.com';
+    const userName = 'User2@org1.example.com';
 
     // Load connection profile; will be used to locate a gateway
     let connectionProfile = yaml.safeLoad(fs.readFileSync('../gateway/networkConnection.yaml', 'utf8'));
@@ -62,17 +62,17 @@ async function main() {
 
     const contract = await network.getContract('insurancecontract', 'org.insurancenet.insurance');
 
-    // issue insurance
-    console.log('Submit insurance issue transaction.');
+    // report to an insurance
+    console.log('Submit report transaction.');
 
-    const issueResponse = await contract.submitTransaction('issue', 'Oscar', 'SmartInsurace', '121214', '000001');
+    const reportResponse = await contract.submitTransaction('report', 'Oscar', 'SmartInsurace', '121214', '000001');
 
     // process response
-    console.log('Process issue transaction response.');
+    console.log('Process report transaction response.');
 
-    let insurance = Insurance.fromBuffer(issueResponse);
+    let insurance = Insurance.fromBuffer(reportResponse);
 
-    console.log(`${insurance.issuer} insurance : ${insurance.insuranceNo} successfully issued for ${insurance.owner} and his ${insurance.goodSerialNo}`);
+    console.log(`successfully reported to the insurance ${insurance.insuranceNo} for ${insurance.owner} and his ${insurance.goodSerialNo}`);
     console.log('Transaction complete.');
 
   } catch (error) {
@@ -90,11 +90,11 @@ async function main() {
 }
 main().then(() => {
 
-  console.log('Issue program complete.');
+  console.log('Report program complete.');
 
 }).catch((e) => {
 
-  console.log('Issue program exception.');
+  console.log('Report program exception.');
   console.log(e);
   console.log(e.stack);
   process.exit(-1);
