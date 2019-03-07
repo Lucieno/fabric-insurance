@@ -130,6 +130,8 @@ class InsuranceContract extends Contract {
         // First buy moves state from ISSUED to TRADING
         if (insurance.isIssued()) {
             insurance.setReported();
+        } else {
+            throw new Error('Insurace ' + issuer + insuranceNo + ' is not at the right state');
         }
 
         // Update the insurance
@@ -158,6 +160,8 @@ class InsuranceContract extends Contract {
             throw new Error('Insurance ' + issuer + insuranceNo + ' has already been refunded');
         }
 
+        let goodSerialNo = insurance.goodSerialNo;
+
         // Verify that the the good is not refunded
         let goodKey = Good.makeKey([goodSerialNo]);
         let good = await ctx.goodList.getGood(goodKey);
@@ -170,7 +174,7 @@ class InsuranceContract extends Contract {
         good.setRefunded();
 
         await ctx.insuranceList.updateInsurance(insurance);
-        await ctx.goodList.goodInsurance(good);
+        await ctx.goodList.updateGood(good);
         return insurance.toBuffer();
     }
 
