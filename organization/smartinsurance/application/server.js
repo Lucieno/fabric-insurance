@@ -69,11 +69,12 @@ async function connect() {
 connect()
 .then(contract => {
   var app = express();
-  app.get('/', function (req, res) {
+  app.use(express.static("./frontend"));
+  app.get('/api/', function (req, res) {
     res.send('root api');
   });
   
-  app.get('/issue', function (req, res) {
+  app.get('/api/issue', function (req, res) {
     var owner = req.query.owner;
     var goodSerialNo = req.query.good;
     var insuranceNo = req.query.insuranceNo;
@@ -83,10 +84,10 @@ connect()
 
     contract.submitTransaction('issue', owner, 'SmartInsurance', goodSerialNo, insuranceNo)
     .then(response => res.send("success"))
-    .catch(err => res.status(400).send(err));
+    .catch(err => res.status(400).send(err.message));
   });
   
-  app.get('/refund', function (req, res) {
+  app.get('/api/refund', function (req, res) {
     var insuranceNo = req.query.insuranceNo;
     if (!insuranceNo) {
       res.status(400).send("invalid input");
@@ -94,7 +95,7 @@ connect()
   
     contract.submitTransaction('refund', 'SmartInsurance', insuranceNo)
     .then(response => res.end("success"))
-    .catch(err => res.status(400).send("invalid input"))
+    .catch(err => res.status(400).send(err.message))
   });
 
   var server = app.listen(8080, () => {
@@ -104,7 +105,7 @@ connect()
 })
 .catch(err => {
   console.log('Failed to connect to InsuranceNet:');
-  console.log(e);
+  console.log(err);
   process.exit(1);
 });
 

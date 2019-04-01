@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="style.css" type="text/css" />
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="script.js"></script>
+<title>SmartInsurance control panel</title>
+</head>
+<body>
+<div class="bk">
+  <div class="title">SmartInsurance Admin</div>
+  <div class="container">
+    <div class="blockTitle">ISSUE</div>
+    <div class="termContainer">
+      <div class="prompt">OWNER</div>
+      <input id="owner" class="input" type="text" placeholder="owner"/>
+    </div>
+    <div class="termContainer">
+      <div class="prompt">GOOD No.</div>
+      <input id="good" class="input" type="text" placeholder="good no."/>
+    </div>
+    <div class="termContainer">
+      <div class="prompt">INSURANCE No.</div>
+      <input id="issueNo" class="input" type="text" placeholder="insurance no."/>
+    </div>
+    <button class="button" onClick="onIssue()">ISSUE</button>
+  </div>
+  <div class="container">
+    <div class="blockTitle">REFUND</div>
+    <div class="termContainer">
+      <div class="prompt">INSURANCE No.</div>
+      <input id="refundNo" class="input" type="text" placeholder="insurance no."/>
+    </div>
+    <button class="button" onClick="onRefund()">REFUND</button>
+  </div>
+
+</div>
+</body>
+</html>
